@@ -1,42 +1,42 @@
-// "use client";
+"use client";
 
-import { getQueryClient, trpc } from "@/trpc/server";
-import { dehydrate, HydrationBoundary } from "@tanstack/react-query";
-import { Suspense } from "react";
-import { Client } from "./client";
+import { Button } from "@/components/ui/button";
+import { inngest } from "@/inngest/client";
+import { useTRPC } from "@/trpc/client";
+import { useMutation } from "@tanstack/react-query";
+import { toast } from "sonner";
 
-// import { useTRPC } from "@/trpc/client";
-// import { useQuery } from "@tanstack/react-query";
-
-// const Page = () => {
-//   const trpc = useTRPC();
-//   //trpc.createAI.queryOptions({ text: "123" });
-//   const { data } = useQuery(trpc.createAI.queryOptions({ text: "Zy" }));
-
-//   return <div>{JSON.stringify(data)}</div>;
-// };
-
-// export default Page;
-
-// const Page = async () => {
-//   const data = await caller.createAI({ text: "Zy from server." });
-//   return <div>{JSON.stringify(data)}</div>;
-// };
-
-// export default Page;
-
-const Page = async () => {
-  const queryClient = getQueryClient();
-  void queryClient.prefetchQuery(
-    trpc.createAI.queryOptions({ text: "Zy PREFETCH" })
+const Page = () => {
+  const trpc = useTRPC();
+  const invoke = useMutation(
+    trpc.invoke.mutationOptions({
+      onSuccess: () => {
+        toast.success("Background job started");
+      },
+    })
   );
 
+  const handleTrigger = async () => {
+    console.log("handleTrigger");
+    // 发送事件 "test/hello.world"，触发 helloWorld 函数
+    await inngest.send({
+      name: "test/hello.world", // 必须与函数监听的事件名称一致
+      data: { email: "user@example.com" }, // 传递给函数的事件数据
+    });
+    alert("事件已发送，helloWorld 函数将被触发");
+  };
+
   return (
-    <HydrationBoundary state={dehydrate(queryClient)}>
-      <Suspense fallback={<p>Loading...</p>}>
-        <Client />
-      </Suspense>
-    </HydrationBoundary>
+    <div className="p-4 max-w-7xl mx-auto">
+      <Button
+        disabled={invoke.isPending}
+        onClick={() => invoke.mutate({ text: "John" })}
+      >
+        Invoke Background Job
+      </Button>
+
+      <Button onClick={handleTrigger}>Click me</Button>
+    </div>
   );
 };
 

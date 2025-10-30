@@ -1,3 +1,4 @@
+import { Toaster } from "@/components/ui/sonner";
 import { TRPCReactProvider } from "@/trpc/client";
 import type { Metadata } from "next";
 import { Geist } from "next/font/google";
@@ -26,7 +27,10 @@ export default function RootLayout({
   return (
     <TRPCReactProvider>
       <html lang="en">
-        <body className={`${geistSans.variable}  antialiased`}>{children}</body>
+        <body className={`${geistSans.variable}  antialiased`}>
+          <Toaster />
+          {children}
+        </body>
       </html>
     </TRPCReactProvider>
   );
