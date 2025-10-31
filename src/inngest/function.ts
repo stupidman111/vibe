@@ -21,6 +21,8 @@
 
 // functions/helloWorld.ts
 
+import { Sandbox } from "@e2b/code-interpreter";
+
 import { ChatMessage, deepseekChat } from "../lib/deepseekClient";
 import { inngest } from "./client";
 
@@ -57,9 +59,34 @@ export async function handleHelloWorld(eventData: { value: string }) {
 export const helloWorld = inngest.createFunction(
   { id: "hello-world" },
   { event: "test/hello.world" },
-  async ({ event }) => {
+
+  async ({ event, step }) => {
+    //
+    const tmplName = "vibe-nextjs-test-09132247";
+
+    // 创建沙箱环境
+    const sandboxId = await step.run("get-sandbox-id", async () => {
+      const sandbox = await Sandbox.create(tmplName);
+      console.log("created sandbox id:", sandbox.sandboxId); //created sandbox id: iqsg0ejflfmlnrn4rwygp
+      return sandbox.sandboxId;
+    });
+
     // 直接复用 handler
     const result = await handleHelloWorld({ value: event.data?.value ?? "" });
-    return result;
+
+    // 获取沙箱环境 URL
+    const sandboxUrl = await step.run("get-sandbox-url", async () => {
+      const sandbox = await Sandbox.create(tmplName);
+      //const sandbox = await getSandbox(sandboxId);
+      const host = sandbox.getHost(3000);
+
+      console.log("sandbox host:", host);
+      console.log("sandbox url:", `https://${host}`);
+      return `https://${host}`;
+    });
+
+    console.log(sandboxUrl);
+
+    return { output: result.output, sandboxUrl };
   }
 );
