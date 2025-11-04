@@ -1,6 +1,7 @@
 import { Toaster } from "@/components/ui/sonner";
 import { TRPCReactProvider } from "@/trpc/client";
 import type { Metadata } from "next";
+import { ThemeProvider } from "next-themes";
 import { Geist } from "next/font/google";
 import "./globals.css";
 
@@ -26,10 +27,17 @@ export default function RootLayout({
 }>) {
   return (
     <TRPCReactProvider>
-      <html lang="en">
+      <html lang="en" suppressHydrationWarning>
         <body className={`${geistSans.variable}  antialiased`}>
-          <Toaster />
-          {children}
+          <ThemeProvider
+            attribute="class"
+            defaultTheme="system"
+            enableSystem
+            disableTransitionOnChange
+          >
+            <Toaster />
+            {children}
+          </ThemeProvider>
         </body>
       </html>
     </TRPCReactProvider>
