@@ -24,7 +24,8 @@ const formSchema = z.object({
 
 export const MessageForm = ({ projectId }: Props) => {
   const [isFocused, setIsFocused] = useState(false);
-  const showUsage = false;
+
+  const showUsage = false; //
 
   const trpc = useTRPC();
   const queryClient = useQueryClient();
