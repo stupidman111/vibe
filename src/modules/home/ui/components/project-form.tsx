@@ -125,7 +125,7 @@ export const ProjectForm = () => {
               key={template.title}
               variant="outline"
               size="sm"
-              className="bg-white dark:bg-sidebar"
+              className="bg-white dark:bg-sidebar cursor-pointer"
               onClick={() => onSelect(template.prompt)}
             >
               {template.emoji} {template.title}
