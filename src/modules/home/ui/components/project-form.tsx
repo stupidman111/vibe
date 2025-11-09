@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Form, FormField } from "@/components/ui/form";
 import { cn } from "@/lib/utils";
 import { useTRPC } from "@/trpc/client";
+import { useClerk } from "@clerk/nextjs";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { ArrowUpIcon, Loader2Icon } from "lucide-react";
@@ -23,6 +24,7 @@ const formSchema = z.object({
 });
 
 export const ProjectForm = () => {
+  const clerk = useClerk();
   const router = useRouter();
   const [isFocused, setIsFocused] = useState(false);
 
@@ -43,6 +45,11 @@ export const ProjectForm = () => {
       },
       onError: (error) => {
         toast.error(error.message);
+
+        if (error.data?.code === "UNAUTHORIZED") {
+          clerk.openSignIn();
+          //router.push("/sign-in");//或者这样
+        }
       },
     })
   );
