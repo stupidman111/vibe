@@ -12,6 +12,7 @@ import {
 } from "@inngest/agent-kit";
 import z from "zod";
 import { inngest } from "./client";
+import { SANDBOX_TIMEOUT } from "./types";
 import { getSandbox, lastAssistantTextMessageContent } from "./utils";
 
 interface AgentState {
@@ -25,6 +26,7 @@ export const codeAgentFunction = inngest.createFunction(
   async ({ event, step }) => {
     const sandboxId = await step.run("get-sandbox-id", async () => {
       const sandbox = await Sandbox.create(process.env.E2B_TMPL_NAME as string);
+      await sandbox.setTimeout(SANDBOX_TIMEOUT);
       return sandbox.sandboxId;
     });
 
@@ -40,6 +42,7 @@ export const codeAgentFunction = inngest.createFunction(
           orderBy: {
             createAt: "desc",
           },
+          take: 5,
         });
 
         for (const message of messgaes) {
@@ -50,7 +53,7 @@ export const codeAgentFunction = inngest.createFunction(
           });
         }
 
-        return formattedMessages;
+        return formattedMessages.reverse();
       }
     );
 
