@@ -6,7 +6,7 @@ interface Props {
 
 const Layout = ({ children }: Props) => {
   return (
-    <main className="flex flex-col min-h-screen max-h-screen">
+    <main className="flex flex-col min-h-screen max-w-screen">
       <Navbar />
       <div
         className="absolute inset-0 -z-10 h-full w-full 
